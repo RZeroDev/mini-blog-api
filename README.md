@@ -397,7 +397,7 @@ npx prisma migrate dev --name description_de_la_modification
 
 ---
 
-## 🔒 Sécurité
+## 🔒 Sécurité 
 
 ### Mesures implémentées
 
