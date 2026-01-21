@@ -238,7 +238,7 @@ export class PostsService {
     return {
       statusCode: 200,
       data: {
-        items: result.items.map((post) => new PostEntity(post)),
+        items: result.items.map((post: any) => new PostEntity(post)),
         meta: result.meta,
       },
       message: `Posts de la catégorie ${category.name} récupérés avec succès`,
