@@ -3,7 +3,7 @@
 /node_modules
 /build
 
-# Logs (fichiers uniquement, pas le dossier src/logs/)
+# Fichiers de logs (mais PAS le dossier src/logs/)
 *.log
 npm-debug.log*
 pnpm-debug.log*
@@ -51,7 +51,12 @@ pids
 *.seed
 *.pid.lock
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
+# Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-/generated/prisma
+# Git
+.git
+.gitignore
+
+# README
+README.md
