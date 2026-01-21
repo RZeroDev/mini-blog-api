@@ -207,7 +207,7 @@ const users = [
     firstName: 'Admin',
     lastName: 'User',
     email: 'admin@mini-blog.com',
-    password: 'admin123', // sera hashé
+    password: 'admin@mini-blog@1234', // sera hashé
     isActive: true,
     isVerified: true,
     roleName: 'admin',
