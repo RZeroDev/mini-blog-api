@@ -101,7 +101,7 @@ export class PostsService {
 
     // Générer un slug unique à partir du titre
     let slug = createSlug(createPostDto.title);
-    let slugExists = await this.prisma.post.findUnique({
+    const slugExists = await this.prisma.post.findUnique({
       where: { slug },
     });
 
@@ -366,7 +366,7 @@ export class PostsService {
     const updateData: any = { ...updatePostDto };
     if (updatePostDto.title && updatePostDto.title !== post.title) {
       let slug = createSlug(updatePostDto.title);
-      let slugExists = await this.prisma.post.findUnique({
+      const slugExists = await this.prisma.post.findUnique({
         where: { slug },
       });
 
