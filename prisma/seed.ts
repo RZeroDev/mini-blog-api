@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
-import { createSlug, generateUniquePseudo } from '../src/utils';
+import { createSlug } from '../src/utils';
 
 const prisma = new PrismaClient();
 
@@ -10,49 +10,31 @@ const roles = [
     label: 'Administrateur',
   },
   {
-    name: 'secretary',
-    label: 'Secrétaire',
-  },
-  {
-    name: 'client',
-    label: 'Client',
-  },
-  {
-    name: 'developer',
-    label: 'Développeur',
+    name: 'user',
+    label: 'Utilisateur',
   },
 ];
 
 const categories = [
   {
-    name: 'Véhicule',
-    slug: createSlug('Véhicule'),
-    image: 'uploads/categories/voiture.webp',
+    name: 'Technologies',
+    slug: createSlug('Technologies'),
+    image: 'uploads/categories/technologies.webp',
   },
   {
-    name: 'Téléphone',
-    slug: createSlug('Téléphone'),
-    image: 'uploads/categories/phone.webp',
+    name: 'Informatique',
+    slug: createSlug('Informatique'),
+    image: 'uploads/categories/informatique.webp',
   },
   {
-    name: 'Moto',
-    slug: createSlug('Moto'),
+    name: 'Nature',
+    slug: createSlug('Nature'),
     image: 'uploads/categories/moto.webp',
   },
   {
-    name: 'Tricycle',
+    name: 'Animaux',
     slug: createSlug('Tricycle'),
     image: 'uploads/categories/tricycle.webp',
-  },
-  {
-    name: 'Ordinateur',
-    slug: createSlug('Ordinateur'),
-    image: 'uploads/categories/ordinateur.webp',
-  },
-  {
-    name: 'Autre',
-    slug: createSlug('Autre'),
-    image: 'uploads/categories/autre.webp',
   },
 ];
 
@@ -61,61 +43,14 @@ const users = [
   {
     firstName: 'Admin',
     lastName: 'User',
-    phone: '0100000000',
-    email: 'admin@verrou.com',
+    email: 'admin@mini-blog.com',
     password: 'admin123', // sera hashé
     isActive: true,
     isVerified: true,
     roleName: 'admin',
   },
-  {
-    firstName: 'Secrétaire',
-    lastName: 'User',
-    phone: '0100000001',
-    email: 'secretary@verrou.com',
-    password: 'secretary123',
-    isActive: true,
-    isVerified: true,
-    roleName: 'secretary',
-  },
-  {
-    firstName: 'Client',
-    lastName: 'User',
-    phone: '0100000002',
-    email: 'client@verrou.com',
-    password: 'client123',
-    isActive: true,
-    isVerified: true,
-    roleName: 'client',
-  },
-  {
-    firstName: 'Dev',
-    lastName: 'User',
-    phone: '0100000003',
-    email: 'developer@verrou.com',
-    password: 'developer123',
-    isActive: true,
-    isVerified: true,
-    roleName: 'developer',
-  },
 ];
 
-const subscriptions = [
-  {
-    assetRemaining: 10,
-    price: 2000,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    assetRemaining: 20,
-    price: 3500,
-    status: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
 
 
 
@@ -184,24 +119,7 @@ async function main() {
     // Hash du mot de passe
     const hashedPassword = await bcrypt.hash(user.password, 10);
 
-    // Générer un pseudo unique pour chaque utilisateur
-    let pseudo = generateUniquePseudo();
-    let isUnique = false;
-    let attempts = 0;
-    const maxAttempts = 10;
-    
-    // Vérifier que le pseudo généré est unique
-    while (!isUnique && attempts < maxAttempts) {
-      const existingPseudo = await prisma.user.findFirst({
-        where: { pseudo },
-      });
-      if (!existingPseudo) {
-        isUnique = true;
-      } else {
-        pseudo = generateUniquePseudo();
-        attempts++;
-      }
-    }
+
 
     // Exclure roleName du user avant de passer à Prisma
     const { roleName, ...userData } = user;
@@ -211,34 +129,24 @@ async function main() {
         where: { id: existingUser.id },
         data: {
           ...userData,
-          pseudo,
           password: hashedPassword,
           roleId: role.id,
         },
       });
-      console.log(`✅ Utilisateur mis à jour: ${user.email} avec pseudo: ${pseudo}`);
+      console.log(`✅ Utilisateur mis à jour: ${user.email}`);
     } else {
       await prisma.user.create({
         data: {
           ...userData,
-          pseudo,
           password: hashedPassword,
           roleId: role.id,
         },
       });
-      console.log(`✅ Utilisateur créé: ${user.email} avec pseudo: ${pseudo}`);
+      console.log(`✅ Utilisateur créé: ${user.email}`);
     }
   }
   console.log('Seed users finish');
-
-  console.log('Seed subscriptions begin');
-  for (const subscription of subscriptions) {
-    await prisma.subscription.create({
-      data: subscription,
-    });
   }
-  console.log('Seed subscriptions finish');
-}
 
 main()
   .catch((e) => {

@@ -30,7 +30,7 @@ import { ApiPagination } from 'src/common/pagination/pagination.swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('categories')
-@ApiTags('04. Gestion des catégories de biens')
+@ApiTags('04. Gestion des catégories de posts')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 

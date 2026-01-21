@@ -62,7 +62,7 @@ export class CategoriesService {
       {
         searchFields: ['name'],
         include: {
-          assets: true,
+          posts: true,
         },
       },
     );
@@ -89,7 +89,7 @@ export class CategoriesService {
     const category = await this.prisma.category.findUnique({
       where: { id },
       include: {
-        assets: true,
+        posts: true,
       },
     });
     if (!category) {
@@ -112,7 +112,7 @@ export class CategoriesService {
         id: { not: id },
       },
       include: {
-        assets: true,
+        posts: true,
       },
     });
 
@@ -147,7 +147,7 @@ export class CategoriesService {
           slug: createSlug(updateCategoryDto.name ?? currentCategory.name),
         },
         include: {
-          assets: true,
+          posts: true,
         },
       });
 
@@ -168,7 +168,7 @@ export class CategoriesService {
     const category = await this.prisma.category.findUnique({
       where: { id },
       include: {
-        assets: true,
+        posts: true,
       },
     });
 
@@ -176,9 +176,9 @@ export class CategoriesService {
       throw new NotFoundException('Catégorie non trouvée');
     }
 
-    if (category.assets && category.assets.length > 0) {
+    if (category.posts && category.posts.length > 0) {
       throw new BadRequestException(
-        'Catégorie non supprimable, elle contient des biens enregistrés',
+        'Catégorie non supprimable, elle contient des posts enregistrés',
       );
     }
 

@@ -6,7 +6,6 @@ import { JwtService } from '@nestjs/jwt';
 import { MailersService } from 'src/mailers/mailers.service';
 import { plainToInstance } from 'class-transformer';
 import { UserEntity } from 'src/users/entities/user.entity';
-import { generateUniquePseudo } from 'src/utils';
 
 @Injectable()
 export class AuthService {
@@ -39,32 +38,13 @@ export class AuthService {
       throw new BadRequestException('Role non trouvé');
     }
 
-    // Générer un pseudo unique pour l'utilisateur
-    let pseudo = generateUniquePseudo();
-    let isUnique = false;
-    let attempts = 0;
-    const maxAttempts = 10;
-    
-    // Vérifier que le pseudo généré est unique
-    while (!isUnique && attempts < maxAttempts) {
-      const existingPseudo = await this.prisma.user.findFirst({
-        where: { pseudo },
-      });
-      if (!existingPseudo) {
-        isUnique = true;
-      } else {
-        pseudo = generateUniquePseudo();
-        attempts++;
-      }
-    }
+  
 
     await this.prisma.user.create({
       data: {
         email: registerDto.email,
         firstName: registerDto.firstName,
         lastName: registerDto.lastName,
-        phone: registerDto.phone,
-        pseudo, // Ajouter le pseudo généré
         role: {
           connect: {
             id: role.id,
@@ -76,7 +56,6 @@ export class AuthService {
 
     return {
       message: 'Compte créé avec succès',
-      pseudo: pseudo, // Retourner le pseudo généré
     };
   }
 

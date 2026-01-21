@@ -9,7 +9,6 @@ import { UserEntity } from './entities/user.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { MailersService } from 'src/mailers/mailers.service';
-import { generateUniquePseudo } from 'src/utils';
 import { PaginationQuery } from 'src/common/pagination/pagination.types';
 import { User } from '@prisma/client';
 import { PaginationService } from 'src/common/pagination/pagination.service';
@@ -30,27 +29,6 @@ export class UsersService {
       throw new BadRequestException('Cet email est déjà utilisé');
     }
 
-    // Générer un pseudo unique si aucun n'est fourni
-    let pseudo = createUserDto.pseudo;
-    if (!pseudo) {
-      pseudo = generateUniquePseudo();
-      // Vérifier que le pseudo généré est unique
-      let isUnique = false;
-      let attempts = 0;
-      const maxAttempts = 10;
-      
-      while (!isUnique && attempts < maxAttempts) {
-        const existingPseudo = await this.prisma.user.findFirst({
-          where: { pseudo },
-        });
-        if (!existingPseudo) {
-          isUnique = true;
-        } else {
-          pseudo = generateUniquePseudo();
-          attempts++;
-        }
-      }
-    }
 
     const generatedPassword = Math.random().toString(36).slice(-8);
     const hashedPassword = await bcrypt.hash(generatedPassword, 10);
@@ -58,7 +36,6 @@ export class UsersService {
     await this.prisma.user.create({
       data: {
         ...createUserDto,
-        pseudo,
         password: hashedPassword,
         role: {
           connect: {
@@ -77,7 +54,6 @@ export class UsersService {
 
     return {
       message: 'Utilisateur créé avec succès',
-      pseudo: pseudo, // Retourner le pseudo généré
     };
   }
 
@@ -106,7 +82,7 @@ export class UsersService {
       where: { id },
       include: {
         role: true,
-        assets: {
+          posts: {
           include: {
             category: true,
           },

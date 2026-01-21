@@ -77,8 +77,4 @@ export class RegisterDto {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  phone: string;
 }

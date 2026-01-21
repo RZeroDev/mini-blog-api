@@ -16,12 +16,6 @@ export class UserEntity {
   picture?: string;
 
   @ApiProperty()
-  tokenNotification?:string;
-
-  @ApiProperty()
-  phone: string;
-
-  @ApiProperty()
   email: string;
 
   @ApiProperty()
