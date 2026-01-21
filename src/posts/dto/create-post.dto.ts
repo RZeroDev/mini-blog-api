@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, IsBoolean, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreatePostDto {
   @ApiProperty({
@@ -11,7 +12,7 @@ export class CreatePostDto {
   title: string;
 
   @ApiProperty({
-    description: 'Contenu du post (peut être du markdown)',
+    description: 'Contenu du post (peut être du markdown ou HTML)',
     example:
       'NestJS est un framework backend puissant basé sur TypeScript...',
   })
@@ -26,4 +27,27 @@ export class CreatePostDto {
   @IsNotEmpty({ message: 'La catégorie est requise' })
   @IsUUID('4', { message: 'L\'ID de catégorie doit être un UUID valide' })
   categoryId: string;
+
+  @ApiProperty({
+    description: 'Statut de publication du post',
+    example: false,
+    default: false,
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return Boolean(value);
+  })
+  @IsBoolean({ message: 'Le statut de publication doit être un booléen' })
+  published?: boolean;
+
+  @ApiProperty({
+    description: 'Image du post',
+    type: 'string',
+    format: 'binary',
+    required: false,
+  })
+  @IsOptional()
+  image?: any;
 }

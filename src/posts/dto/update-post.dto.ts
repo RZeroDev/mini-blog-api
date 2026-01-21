@@ -1,5 +1,6 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID, IsBoolean } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class UpdatePostDto {
   @ApiPropertyOptional({
@@ -25,4 +26,25 @@ export class UpdatePostDto {
   @IsOptional()
   @IsUUID('4', { message: 'L\'ID de catégorie doit être un UUID valide' })
   categoryId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Statut de publication du post',
+    example: true,
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return Boolean(value);
+  })
+  @IsBoolean({ message: 'Le statut de publication doit être un booléen' })
+  published?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Nouvelle image du post',
+    type: 'string',
+    format: 'binary',
+  })
+  @IsOptional()
+  image?: any;
 }

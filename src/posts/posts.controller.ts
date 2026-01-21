@@ -10,7 +10,12 @@ import {
   Request,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -40,13 +45,38 @@ export class PostsController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads/posts',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Créer un nouveau post (admin uniquement)' })
   @ApiCreatedResponse({
     description: 'Post créé avec succès',
     type: PostEntity,
   })
-  create(@Body() createPostDto: CreatePostDto, @Request() req) {
+  create(
+    @Body() createPostDto: CreatePostDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Request() req,
+  ) {
+    if (file) {
+      createPostDto.image = file.filename;
+    }
+    // Convertir published en booléen si c'est une string
+    if (typeof createPostDto.published === 'string') {
+      createPostDto.published = createPostDto.published === 'true';
+    }
     return this.postsService.create(createPostDto, req.user.id);
   }
 
@@ -101,6 +131,20 @@ export class PostsController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads/posts',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Mettre à jour un post (admin uniquement)' })
   @ApiParam({ name: 'id', description: 'ID du post à modifier' })
@@ -111,8 +155,16 @@ export class PostsController {
   update(
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,
+    @UploadedFile() file: Express.Multer.File,
     @Request() req,
   ) {
+    if (file) {
+      updatePostDto.image = file.filename;
+    }
+    // Convertir published en booléen si c'est une string
+    if (typeof updatePostDto.published === 'string') {
+      updatePostDto.published = updatePostDto.published === 'true';
+    }
     return this.postsService.update(
       id,
       updatePostDto,

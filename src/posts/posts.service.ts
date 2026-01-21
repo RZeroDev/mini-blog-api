@@ -35,6 +35,8 @@ export class PostsService {
         content: createPostDto.content,
         userId,
         categoryId: createPostDto.categoryId,
+        published: createPostDto.published ?? false,
+        ...(createPostDto.image && { image: createPostDto.image }),
       },
       include: {
         user: {
