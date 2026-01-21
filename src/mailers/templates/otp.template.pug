@@ -1,0 +1,108 @@
+doctype html
+html(lang="fr")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    title #{title} - Verrou
+    link(href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet")
+    style.
+      body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: #fff;
+        font-size: 15px;
+        color: #111;
+      }
+      .container {
+        max-width: 480px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+        padding: 40px 32px 32px 32px;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 18px;
+        margin-bottom: 32px;
+      }
+      .header img {
+        height: 32px;
+      }
+      .header .date {
+        font-size: 13px;
+        color: #888;
+      }
+      .main-title {
+        margin: 0 0 18px 0;
+        font-size: 22px;
+        font-weight: 600;
+        color: #111;
+        letter-spacing: 1px;
+      }
+      .greeting {
+        margin: 0 0 18px 0;
+        font-size: 16px;
+        font-weight: 500;
+        color: #222;
+      }
+      .desc {
+        margin: 0 0 36px 0;
+        font-size: 15px;
+        color: #444;
+        line-height: 1.7;
+      }
+      .otp-code {
+        margin: 0 auto 36px auto;
+        font-size: 38px;
+        font-weight: 700;
+        letter-spacing: 18px;
+        color: #111;
+        background: #f7f7f7;
+        border-radius: 8px;
+        width: fit-content;
+        padding: 12px 24px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      }
+      .help {
+        margin: 0 auto 0 auto;
+        max-width: 340px;
+        text-align: center;
+        font-size: 14px;
+        color: #888;
+        font-weight: 500;
+      }
+      .help a {
+        color: #111;
+        text-decoration: underline;
+        font-weight: 500;
+      }
+      .footer {
+        width: 100%;
+        max-width: 340px;
+        margin: 32px auto 0 auto;
+        text-align: center;
+        border-top: 1px solid #eee;
+        padding-top: 16px;
+        color: #888;
+        font-size: 13px;
+      }
+  body
+    .container
+      main
+        h1.main-title #{title}
+        p.greeting Bonjour #{username},
+        p.desc
+          | Merci d'utiliser Verrou. Veuillez utiliser le code suivant pour la #{purpose}. Ce code est valable pendant 
+          span(style="font-weight:600; color:#111;") 5 minutes
+          | . Ne partagez pas ce code avec d'autres personnes, y compris les employés de Verrou.
+        div.otp-code #{otp}
+        p.help
+          | Besoin d'aide ? Contactez-nous à 
+          a(href="mailto:support@verrou.com") support@verrou.com
+      .footer
+        | © #{year} Verrou. Tous droits réservés.

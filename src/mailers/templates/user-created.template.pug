@@ -1,0 +1,58 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    title Bienvenue sur Hodesch
+    style.
+      body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: #f6f8fa;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        padding: 32px 28px 24px 28px;
+      }
+      h1 {
+        color: #2d7ff9;
+        margin-bottom: 8px;
+        font-size: 2em;
+      }
+      .info {
+        background: #f0f4fa;
+        border-radius: 6px;
+        padding: 16px;
+        margin: 18px 0 24px 0;
+        font-size: 1.1em;
+      }
+      ul {
+        padding-left: 18px;
+      }
+      li {
+        margin-bottom: 6px;
+      }
+      .footer {
+        color: #888;
+        font-size: 0.95em;
+        margin-top: 32px;
+        text-align: center;
+      }
+  body
+    .container
+      h1 Bienvenue, #{firstName} #{lastName} !
+      p Bonjour #{firstName},
+      p Votre compte a été créé avec succès sur <b>Hodesch</b>.
+      .info
+        p Voici vos informations de connexion :
+        ul
+          li <b>Email :</b> #{email}
+          li <b>Mot de passe :</b> #{password}
+      p(style="margin-top: 18px;") Nous vous recommandons de changer votre mot de passe après votre première connexion.
+      .footer
+        | Merci et bienvenue parmi nous !<br/>
+        | L'équipe Hodesch 
