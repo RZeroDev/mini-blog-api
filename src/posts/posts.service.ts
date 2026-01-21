@@ -8,10 +8,15 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostEntity } from './entities/post.entity';
+import { PaginationService } from '../common/pagination/pagination.service';
+import { PaginationQuery } from '../common/pagination/pagination.query';
 
 @Injectable()
 export class PostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private paginationService: PaginationService,
+  ) {}
 
   /**
    * Créer un nouveau post (admin uniquement)

@@ -12,10 +12,13 @@ import {
   HttpStatus,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { PaginationQuery } from '../common/pagination/pagination.query';
+import { ApiPagination } from '../common/pagination/pagination.decorator';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -81,17 +84,18 @@ export class PostsController {
   }
 
   /**
-   * Récupérer tous les posts (public)
+   * Récupérer tous les posts avec pagination (public)
    * GET /posts
    */
   @Get()
-  @ApiOperation({ summary: 'Récupérer tous les posts (public)' })
+  @ApiOperation({ summary: 'Récupérer tous les posts avec pagination (public)' })
   @ApiOkResponse({
     description: 'Liste de tous les posts',
     type: [PostEntity],
   })
-  findAll() {
-    return this.postsService.findAll();
+  @ApiPagination()
+  findAll(@Query() query: PaginationQuery) {
+    return this.postsService.findAll(query);
   }
 
   /**
