@@ -10,6 +10,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostEntity } from './entities/post.entity';
 import { PaginationService } from '../common/pagination/pagination.service';
 import { PaginationQuery } from '../common/pagination/pagination.types';
+import { createSlug } from '../utils';
 
 @Injectable()
 export class PostsService {
@@ -34,9 +35,27 @@ export class PostsService {
       throw new BadRequestException('Catégorie introuvable');
     }
 
+    // Générer un slug unique à partir du titre
+    let slug = createSlug(createPostDto.title);
+    let slugExists = await this.prisma.post.findUnique({
+      where: { slug },
+    });
+
+    // Si le slug existe déjà, ajouter un suffixe numérique
+    if (slugExists) {
+      let counter = 1;
+      let newSlug = `${slug}-${counter}`;
+      while (await this.prisma.post.findUnique({ where: { slug: newSlug } })) {
+        counter++;
+        newSlug = `${slug}-${counter}`;
+      }
+      slug = newSlug;
+    }
+
     const post = await this.prisma.post.create({
       data: {
         title: createPostDto.title,
+        slug,
         content: createPostDto.content,
         userId,
         categoryId: createPostDto.categoryId,
@@ -213,9 +232,32 @@ export class PostsService {
       }
     }
 
+    // Si le titre change, générer un nouveau slug
+    const updateData: any = { ...updatePostDto };
+    if (updatePostDto.title && updatePostDto.title !== post.title) {
+      let slug = createSlug(updatePostDto.title);
+      let slugExists = await this.prisma.post.findUnique({
+        where: { slug },
+      });
+
+      // Si le slug existe déjà (et ce n'est pas le post actuel), ajouter un suffixe numérique
+      if (slugExists && slugExists.id !== id) {
+        let counter = 1;
+        let newSlug = `${slug}-${counter}`;
+        while (
+          await this.prisma.post.findUnique({ where: { slug: newSlug } })
+        ) {
+          counter++;
+          newSlug = `${slug}-${counter}`;
+        }
+        slug = newSlug;
+      }
+      updateData.slug = slug;
+    }
+
     const updatedPost = await this.prisma.post.update({
       where: { id },
-      data: updatePostDto,
+      data: updateData,
       include: {
         user: {
           select: {

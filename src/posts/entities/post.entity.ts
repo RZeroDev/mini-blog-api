@@ -8,6 +8,9 @@ export class PostEntity {
   @ApiProperty({ description: 'Titre du post' })
   title: string;
 
+  @ApiProperty({ description: 'Slug unique du post (URL-friendly)' })
+  slug: string;
+
   @ApiProperty({ description: 'Contenu du post' })
   content: string;
 
