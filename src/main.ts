@@ -24,10 +24,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ResponseInterceptor());
   const config = new DocumentBuilder()
-    .setTitle('Verrou API')
-    .setDescription('Verrou API description')
+    .setTitle('Mini Blog API')
+    .setDescription('Mini Blog API description')
     .setVersion('1.0')
-    .addTag('Verrou')
+    .addTag('Mini Blog')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
