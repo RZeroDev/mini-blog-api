@@ -23,6 +23,7 @@ export interface PaginationOptions {
   defaultSortBy?: string;
   defaultSortOrder?: 'asc' | 'desc';
   defaultLimit?: number;
-  include?: Record<string, boolean>;
+  include?: Record<string, any>;
   where?: Record<string, any>;
+  orderBy?: Record<string, any>;
 } 

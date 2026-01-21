@@ -17,8 +17,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { PaginationQuery } from '../common/pagination/pagination.query';
-import { ApiPagination } from '../common/pagination/pagination.decorator';
+import { PaginationQuery } from '../common/pagination/pagination.types';
+import { ApiPagination } from '../common/pagination/pagination.swagger';
 import {
   ApiBearerAuth,
   ApiOkResponse,

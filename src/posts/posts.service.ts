@@ -9,7 +9,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostEntity } from './entities/post.entity';
 import { PaginationService } from '../common/pagination/pagination.service';
-import { PaginationQuery } from '../common/pagination/pagination.query';
+import { PaginationQuery } from '../common/pagination/pagination.types';
 
 @Injectable()
 export class PostsService {
@@ -68,33 +68,41 @@ export class PostsService {
   }
 
   /**
-   * Récupérer tous les posts (public)
+   * Récupérer tous les posts avec pagination (public)
    */
-  async findAll(): Promise<PostEntity[]> {
-    const posts = await this.prisma.post.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            picture: true,
-            email: true,
+  async findAll(query: PaginationQuery) {
+    const posts = await this.paginationService.paginate(
+      this.prisma.post,
+      query,
+      {
+        searchFields: ['title', 'content'],
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              picture: true,
+              email: true,
+            },
+          },
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              image: true,
+            },
           },
         },
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            image: true,
-          },
-        },
+        orderBy: { createdAt: 'desc' },
       },
-    });
+    );
 
-    return posts.map((post) => new PostEntity(post));
+    return {
+      data: posts,
+      message: 'Posts récupérés avec succès',
+    };
   }
 
   /**

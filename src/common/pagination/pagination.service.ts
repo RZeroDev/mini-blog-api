@@ -28,7 +28,7 @@ export class PaginationService {
       },
       {
         search: options.searchFields || [],
-        orderBy: { [sortBy]: sortOrder },
+        orderBy: options.orderBy || { [sortBy]: sortOrder },
       }
     );
 
@@ -41,7 +41,7 @@ export class PaginationService {
       model.findMany({
         where: whereCondition,
         include: options.include,
-        orderBy: { [sortBy]: sortOrder },
+        orderBy: options.orderBy || { [sortBy]: sortOrder },
       })
     ]);
 
