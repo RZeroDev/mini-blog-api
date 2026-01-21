@@ -193,9 +193,9 @@ export class PostsService {
   }
 
   /**
-   * Récupérer les posts par catégorie (public)
+   * Récupérer les posts par catégorie avec pagination (public)
    */
-  async findByCategory(categoryId: string) {
+  async findByCategory(categoryId: string, query: PaginationQuery) {
     const category = await this.prisma.category.findUnique({
       where: { id: categoryId },
     });
@@ -204,35 +204,43 @@ export class PostsService {
       throw new NotFoundException('Catégorie introuvable');
     }
 
-    const posts = await this.prisma.post.findMany({
-      where: { 
-        categoryId,
-        published: true, // Filtrer uniquement les posts publiés
-      },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            picture: true,
-            email: true,
+    const result = await this.paginationService.paginate(
+      this.prisma.post,
+      query,
+      {
+        where: {
+          categoryId,
+          published: true,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              picture: true,
+              email: true,
+            },
+          },
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              image: true,
+            },
           },
         },
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            image: true,
-          },
-        },
+        orderBy: { createdAt: 'desc' },
       },
-    });
+    );
 
     return {
-      data: posts.map((post) => new PostEntity(post)),
+      statusCode: 200,
+      data: {
+        items: result.items.map((post) => new PostEntity(post)),
+        meta: result.meta,
+      },
       message: `Posts de la catégorie ${category.name} récupérés avec succès`,
     };
   }
