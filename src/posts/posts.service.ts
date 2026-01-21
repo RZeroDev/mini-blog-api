@@ -195,7 +195,7 @@ export class PostsService {
   /**
    * Récupérer les posts par catégorie (public)
    */
-  async findByCategory(categoryId: string): Promise<PostEntity[]> {
+  async findByCategory(categoryId: string) {
     const category = await this.prisma.category.findUnique({
       where: { id: categoryId },
     });
@@ -205,7 +205,10 @@ export class PostsService {
     }
 
     const posts = await this.prisma.post.findMany({
-      where: { categoryId },
+      where: { 
+        categoryId,
+        published: true, // Filtrer uniquement les posts publiés
+      },
       orderBy: { createdAt: 'desc' },
       include: {
         user: {
@@ -228,7 +231,10 @@ export class PostsService {
       },
     });
 
-    return posts.map((post) => new PostEntity(post));
+    return {
+      data: posts.map((post) => new PostEntity(post)),
+      message: `Posts de la catégorie ${category.name} récupérés avec succès`,
+    };
   }
 
   /**
