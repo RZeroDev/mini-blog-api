@@ -409,6 +409,25 @@ export class PostsService {
       },
     });
 
+    // Logger la modification
+    try {
+      await this.logsService.create({
+        action: 'UPDATE',
+        entity: 'POST',
+        entityId: updatedPost.id,
+        userId,
+        userName: `${updatedPost.user.firstName} ${updatedPost.user.lastName}`,
+        details: JSON.stringify({
+          title: updatedPost.title,
+          slug: updatedPost.slug,
+          published: updatedPost.published,
+          changes: updatePostDto,
+        }),
+      });
+    } catch (error) {
+      console.error('Erreur lors de la création du log:', error);
+    }
+
     return new PostEntity(updatedPost);
   }
 
@@ -418,6 +437,15 @@ export class PostsService {
   async remove(id: string, userId: string, userRole: string): Promise<void> {
     const post = await this.prisma.post.findUnique({
       where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
     });
 
     if (!post) {
@@ -434,5 +462,21 @@ export class PostsService {
     await this.prisma.post.delete({
       where: { id },
     });
+
+    // Logger la suppression
+    try {
+      await this.logsService.create({
+        action: 'DELETE',
+        entity: 'POST',
+        entityId: id,
+        userId,
+        details: JSON.stringify({
+          title: post.title,
+          slug: post.slug,
+        }),
+      });
+    } catch (error) {
+      console.error('Erreur lors de la création du log:', error);
+    }
   }
 }
