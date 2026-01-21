@@ -18,7 +18,7 @@ import { JwtStrategy } from './jwt.strategy';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '3d' }, // e.g. 30s, 7d, 24h
     }),
-    UsersModule,
+    UsersModule, 
     MailersModule,
   ]
 })

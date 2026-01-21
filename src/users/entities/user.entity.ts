@@ -18,10 +18,9 @@ export class UserEntity {
   @ApiProperty()
   email: string;
 
-  @ApiProperty()
+  @Exclude()
   password: string;
 
-  @ApiProperty()
   @Exclude()
   otp?: string;
 
