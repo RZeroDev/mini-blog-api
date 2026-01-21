@@ -99,6 +99,37 @@ export class PostsController {
   }
 
   /**
+   * Obtenir les statistiques du dashboard
+   * GET /posts/stats
+   */
+  @Get('stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtenir les statistiques du dashboard (admin uniquement)' })
+  @ApiOkResponse({
+    description: 'Statistiques du dashboard',
+  })
+  getStats() {
+    return this.postsService.getStats();
+  }
+
+  /**
+   * Incrémenter les vues d'un post (public)
+   * POST /posts/:id/view
+   */
+  @Post(':id/view')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Incrémenter les vues d\'un post (public)' })
+  @ApiParam({ name: 'id', description: 'ID du post' })
+  @ApiOkResponse({
+    description: 'Vue enregistrée',
+  })
+  incrementViews(@Param('id') id: string) {
+    return this.postsService.incrementViews(id);
+  }
+
+  /**
    * Récupérer un post par slug (public)
    * GET /posts/slug/:slug
    */

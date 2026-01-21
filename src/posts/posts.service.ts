@@ -20,6 +20,65 @@ export class PostsService {
   ) {}
 
   /**
+   * Obtenir les statistiques du dashboard
+   */
+  async getStats() {
+    const [
+      totalPosts,
+      publishedPosts,
+      draftPosts,
+      totalCategories,
+      totalViews,
+    ] = await Promise.all([
+      this.prisma.post.count(),
+      this.prisma.post.count({ where: { published: true } }),
+      this.prisma.post.count({ where: { published: false } }),
+      this.prisma.category.count(),
+      this.prisma.post.aggregate({
+        _sum: {
+          views: true,
+        },
+      }),
+    ]);
+
+    return {
+      totalPosts,
+      publishedPosts,
+      draftPosts,
+      totalCategories,
+      totalViews: totalViews._sum.views || 0,
+    };
+  }
+
+  /**
+   * Incrémenter les vues d'un post
+   */
+  async incrementViews(id: string) {
+    const post = await this.prisma.post.findUnique({
+      where: { id },
+    });
+
+    if (!post) {
+      throw new NotFoundException(`Post avec l'ID ${id} introuvable`);
+    }
+
+    // Incrémenter les vues
+    await this.prisma.post.update({
+      where: { id },
+      data: {
+        views: {
+          increment: 1,
+        },
+      },
+    });
+
+    return {
+      message: 'Vue enregistrée',
+      views: (post.views || 0) + 1,
+    };
+  }
+
+  /**
    * Créer un nouveau post (admin uniquement)
    */
   async create(
