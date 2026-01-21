@@ -193,7 +193,7 @@ export class PostsService {
   }
 
   /**
-   * Récupérer les posts par catégorie avec pagination (public)
+   * Récupérer les posts par catégorie (public) - Avec pagination
    */
   async findByCategory(categoryId: string, query: PaginationQuery) {
     const category = await this.prisma.category.findUnique({
@@ -208,10 +208,11 @@ export class PostsService {
       this.prisma.post,
       query,
       {
-        where: {
+        where: { 
           categoryId,
           published: true,
         },
+        orderBy: { createdAt: 'desc' },
         include: {
           user: {
             select: {
@@ -231,7 +232,6 @@ export class PostsService {
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
       },
     );
 

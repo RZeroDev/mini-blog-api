@@ -129,18 +129,21 @@ export class PostsController {
   }
 
   /**
-   * Récupérer les posts par catégorie avec pagination (public)
+   * Récupérer les posts par catégorie (public) - Avec pagination
    * GET /posts/category/:categoryId
    */
   @Get('category/:categoryId')
-  @ApiOperation({ summary: 'Récupérer les posts par catégorie avec pagination (public)' })
+  @ApiOperation({ summary: 'Récupérer les posts par catégorie (public)' })
   @ApiParam({ name: 'categoryId', description: 'ID de la catégorie' })
+  @ApiPagination()
   @ApiOkResponse({
-    description: 'Liste des posts de la catégorie',
+    description: 'Liste des posts de la catégorie avec pagination',
     type: [PostEntity],
   })
-  @ApiPagination()
-  findByCategory(@Param('categoryId') categoryId: string, @Query() query: PaginationQuery) {
+  findByCategory(
+    @Param('categoryId') categoryId: string,
+    @Query() query: PaginationQuery,
+  ) {
     return this.postsService.findByCategory(categoryId, query);
   }
 
