@@ -99,6 +99,21 @@ export class PostsController {
   }
 
   /**
+   * Récupérer un post par slug (public)
+   * GET /posts/slug/:slug
+   */
+  @Get('slug/:slug')
+  @ApiOperation({ summary: 'Récupérer un post par son slug (public)' })
+  @ApiParam({ name: 'slug', description: 'Slug du post' })
+  @ApiOkResponse({
+    description: 'Détails du post',
+    type: PostEntity,
+  })
+  findBySlug(@Param('slug') slug: string) {
+    return this.postsService.findBySlug(slug);
+  }
+
+  /**
    * Récupérer un post par ID (public)
    * GET /posts/:id
    */

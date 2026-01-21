@@ -125,6 +125,40 @@ export class PostsService {
   }
 
   /**
+   * Récupérer un post par slug (public)
+   */
+  async findBySlug(slug: string): Promise<PostEntity> {
+    const post = await this.prisma.post.findUnique({
+      where: { slug },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            picture: true,
+            email: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException(`Post avec le slug ${slug} introuvable`);
+    }
+
+    return new PostEntity(post);
+  }
+
+  /**
    * Récupérer un post par ID (public)
    */
   async findOne(id: string): Promise<PostEntity> {
