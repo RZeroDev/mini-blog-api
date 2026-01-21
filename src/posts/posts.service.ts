@@ -147,6 +147,24 @@ export class PostsService {
       },
     });
 
+    // Logger la création
+    try {
+      await this.logsService.create({
+        action: 'CREATE',
+        entity: 'POST',
+        entityId: post.id,
+        userId,
+        userName: `${post.user.firstName} ${post.user.lastName}`,
+        details: JSON.stringify({
+          title: post.title,
+          slug: post.slug,
+          published: post.published,
+        }),
+      });
+    } catch (error) {
+      console.error('Erreur lors de la création du log:', error);
+    }
+
     return new PostEntity(post);
   }
 
