@@ -3,6 +3,8 @@ import {
   NotFoundException,
   ForbiddenException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -11,12 +13,15 @@ import { PostEntity } from './entities/post.entity';
 import { PaginationService } from '../common/pagination/pagination.service';
 import { PaginationQuery } from '../common/pagination/pagination.types';
 import { createSlug } from '../utils';
+import { LogsService } from '../logs/logs.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     private prisma: PrismaService,
     private paginationService: PaginationService,
+    @Inject(forwardRef(() => LogsService))
+    private logsService: LogsService,
   ) {}
 
   /**

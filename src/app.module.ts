@@ -8,6 +8,8 @@ import { ProfileModule } from './profile/profile.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ConfigModule } from '@nestjs/config';
 import { PostsModule } from './posts/posts.module';
+import { LogsModule } from './logs/logs.module';
+
 @Module({
   imports: [
     AuthModule,
@@ -15,8 +17,9 @@ import { PostsModule } from './posts/posts.module';
     RolesModule,
     ProfileModule,
     CategoriesModule,
-  ConfigModule.forRoot(),
-  PostsModule,
+    ConfigModule.forRoot(),
+    PostsModule,
+    LogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

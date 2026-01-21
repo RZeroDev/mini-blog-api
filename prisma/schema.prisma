@@ -58,12 +58,31 @@ model Post {
   content      String
   image        String?
   published    Boolean     @default(false)
+  views        Int         @default(0)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   user         User        @relation(fields: [userId], references: [id])
   userId       String
   categoryId   String
   category     Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Log {
+  id          String   @id @default(uuid())
+  action      String   // CREATE, UPDATE, DELETE, VIEW, LOGIN, LOGOUT, etc.
+  entity      String   // POST, CATEGORY, USER, etc.
+  entityId    String?  // ID de l'entité concernée
+  userId      String?  // Utilisateur qui a effectué l'action
+  userName    String?  // Nom de l'utilisateur pour éviter les jointures
+  details     String?  // Détails additionnels en JSON
+  ipAddress   String?  // Adresse IP
+  userAgent   String?  // User agent du navigateur
+  createdAt   DateTime @default(now())
+  
+  @@index([action])
+  @@index([entity])
+  @@index([userId])
+  @@index([createdAt])
 }
 
 
