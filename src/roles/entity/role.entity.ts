@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 export class RoleEntity {
-  @ApiProperty()
+  @Exclude()
   id: string;
 
   @ApiProperty()
@@ -10,9 +11,9 @@ export class RoleEntity {
   @ApiProperty()
   label: string;
 
-  @ApiProperty()
+  @Exclude()
   createdAt: Date;
 
-  @ApiProperty()
+  @Exclude()
   updatedAt: Date;
 }
