@@ -5,9 +5,37 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  
+  // Security headers with Helmet (recommended by Snyk Learn)
+  // https://learn.snyk.io/lesson/xss/?ecosystem=javascript
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline needed for Swagger
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", "data:", "https:", "http:"],
+          connectSrc: [
+            "'self'",
+            "http://localhost:5173",
+            "https://mini-blog-seven-omega.vercel.app"
+          ],
+          fontSrc: ["'self'", "data:"],
+          objectSrc: ["'none'"],
+          mediaSrc: ["'self'"],
+          frameSrc: ["'none'"],
+          upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
+        },
+      },
+      crossOriginEmbedderPolicy: false, // Needed for uploaded images
+      crossOriginResourcePolicy: { policy: "cross-origin" }, // Needed for CORS
+    })
+  );
   
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
