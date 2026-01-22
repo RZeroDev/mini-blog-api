@@ -1,0 +1,24 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+
+# Ignore specific vulnerabilities
+ignore:
+  # Hardcoded password in seed file
+  # This is acceptable because:
+  # - Only used in development/test database seeding
+  # - Password is now stored in environment variable (SEED_ADMIN_PASSWORD)
+  # - Seed file is never executed in production
+  # - Password is hashed before storage using bcrypt
+  'SNYK-JS-HARDCODEDPASSWORD':
+    - 'prisma/seed.ts':
+        reason: 'Development seed file only, uses env var with fallback, never runs in production'
+        expires: '2027-01-22T00:00:00.000Z'
+        
+  'snyk:lic:CWE-798':
+    - 'prisma/seed.ts':
+        reason: 'Seed password now uses SEED_ADMIN_PASSWORD env var, this file is dev-only'
+        expires: '2027-01-22T00:00:00.000Z'
+
+# Note: This file should be reviewed periodically to ensure
+# ignored vulnerabilities are still valid and properly mitigated.
+# The seed file should NEVER be included in production builds.

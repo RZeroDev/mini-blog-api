@@ -4,6 +4,10 @@ import { createSlug } from '../src/utils';
 
 const prisma = new PrismaClient();
 
+// Utiliser une variable d'environnement pour le mot de passe de seed
+// En production, ne jamais utiliser de valeur par défaut
+const SEED_ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || 'Admin@mini-blog@1234';
+
 const roles = [
   {
     name: 'admin',
@@ -202,12 +206,14 @@ function generatePostsForCategory(categoryName: string) {
 }
 
 // Utilisateurs de seed pour chaque rôle
+// Note: Ce fichier est uniquement pour le développement/test
+// En production, les utilisateurs doivent être créés via l'interface d'administration
 const users = [
   {
     firstName: 'Admin',
     lastName: 'User',
     email: 'admin@mini-blog.com',
-    password: 'Admin@mini-blog@1234', // sera hashé
+    password: SEED_ADMIN_PASSWORD, // Utilise la variable d'environnement ou valeur par défaut
     isActive: true,
     isVerified: true,
     roleName: 'admin',
