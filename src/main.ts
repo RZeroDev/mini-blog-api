@@ -23,7 +23,8 @@ async function bootstrap() {
           connectSrc: [
             "'self'",
             "http://localhost:5173",
-            "https://mini-blog-seven-omega.vercel.app"
+            "https://mini-blog-seven-omega.vercel.app",
+            "https://mini-blog.redopay.online/"
           ],
           fontSrc: ["'self'", "data:"],
           objectSrc: ["'none'"],
