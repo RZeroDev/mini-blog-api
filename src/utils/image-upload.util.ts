@@ -8,10 +8,10 @@ export interface UploadOptions {
   fileNamePrefix?: string;
 }
 
-export async function uploadImage(
+export function uploadImage(
   file: Express.Multer.File,
   options: UploadOptions = {}
-): Promise<{ fileName: string; relativePath: string; fullPath: string }> {
+): { fileName: string; relativePath: string; fullPath: string } {
   if (!file) {
     throw new Error('Aucun fichier fourni');
   }
@@ -58,7 +58,7 @@ export async function uploadImage(
   };
 }
 
-export async function deleteImage(imagePath: string): Promise<void> {
+export function deleteImage(imagePath: string): void {
   if (!imagePath) return;
 
   const fullPath = path.join(process.cwd(), imagePath);

@@ -32,26 +32,25 @@ export class LoggingInterceptor implements NestInterceptor {
       const entityId = this.extractEntityId(url);
 
       return next.handle().pipe(
-        tap(async () => {
-          try {
-            await this.logsService.create({
-              action,
-              entity,
-              entityId: entityId || undefined,
-              userId: user?.id,
-              userName: user ? `${user.firstName} ${user.lastName}` : undefined,
-              details: JSON.stringify({
-                method,
-                url,
-                body: request.body,
-              }),
-              ipAddress: ip || headers['x-forwarded-for'],
-              userAgent: headers['user-agent'],
-            });
-          } catch (error) {
+        tap(() => {
+          // Exécuter le logging de manière asynchrone sans bloquer
+          this.logsService.create({
+            action,
+            entity,
+            entityId: entityId || undefined,
+            userId: user?.id,
+            userName: user ? `${user.firstName} ${user.lastName}` : undefined,
+            details: JSON.stringify({
+              method,
+              url,
+              body: request.body,
+            }),
+            ipAddress: ip || headers['x-forwarded-for'],
+            userAgent: headers['user-agent'],
+          }).catch((error) => {
             // Ne pas bloquer la requête si le logging échoue
             console.error('Erreur lors de la création du log:', error);
-          }
+          });
         }),
       );
     }
