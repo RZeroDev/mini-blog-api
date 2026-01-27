@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { promises as fsPromises } from 'fs';
 import * as path from 'path';
 
 export interface UploadOptions {
@@ -8,10 +9,10 @@ export interface UploadOptions {
   fileNamePrefix?: string;
 }
 
-export function uploadImage(
+export async function uploadImage(
   file: Express.Multer.File,
   options: UploadOptions = {}
-): { fileName: string; relativePath: string; fullPath: string } {
+): Promise<{ fileName: string; relativePath: string; fullPath: string }> {
   if (!file) {
     throw new Error('Aucun fichier fourni');
   }
@@ -36,8 +37,10 @@ export function uploadImage(
 
   // Créer le dossier s'il n'existe pas
   const uploadsDir = path.join(process.cwd(), directory);
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
+  try {
+    await fsPromises.access(uploadsDir);
+  } catch {
+    await fsPromises.mkdir(uploadsDir, { recursive: true });
   }
 
   // Générer un nom de fichier unique
@@ -47,7 +50,7 @@ export function uploadImage(
   const filePath = path.join(uploadsDir, fileName);
 
   // Sauvegarder le fichier
-  fs.writeFileSync(filePath, file.buffer);
+  await fsPromises.writeFile(filePath, file.buffer);
 
   const relativePath = `${directory}/${fileName}`;
 
@@ -58,11 +61,14 @@ export function uploadImage(
   };
 }
 
-export function deleteImage(imagePath: string): void {
+export async function deleteImage(imagePath: string): Promise<void> {
   if (!imagePath) return;
 
   const fullPath = path.join(process.cwd(), imagePath);
-  if (fs.existsSync(fullPath)) {
-    fs.unlinkSync(fullPath);
+  try {
+    await fsPromises.access(fullPath);
+    await fsPromises.unlink(fullPath);
+  } catch {
+    // Le fichier n'existe pas ou erreur, on ignore
   }
 } 
