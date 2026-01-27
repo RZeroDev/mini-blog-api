@@ -93,17 +93,26 @@ jobs:
             docker stop mini-blog-api || true
             docker rm mini-blog-api || true
             
-            # Exécuter les migrations Prisma (les variables d'env sont dans le conteneur ou via .env)
-            docker run --rm \
-              --env-file /root/.env-api 2>/dev/null || true \
-              $IMAGE_NAME:latest \
-              npx prisma migrate deploy || echo "Migrations déjà à jour"
+            # Exécuter les migrations Prisma
+            if [ -f /root/.env-api ]; then
+              docker run --rm \
+                --env-file /root/.env-api \
+                $IMAGE_NAME:latest \
+                npx prisma migrate deploy || echo "Migrations déjà à jour"
+            else
+              echo "⚠️  Fichier /root/.env-api non trouvé, migrations ignorées"
+            fi
             
             # Démarrer le conteneur (Nginx fera le reverse proxy)
-            docker run -d \
-              --name mini-blog-api \
-              -p 3000:4000 \
-              --env-file /root/.env-api 2>/dev/null || true \
-              --restart unless-stopped \
-              $IMAGE_NAME:latest
+            if [ -f /root/.env-api ]; then
+              docker run -d \
+                --name mini-blog-api \
+                -p 3000:4000 \
+                --env-file /root/.env-api \
+                --restart unless-stopped \
+                $IMAGE_NAME:latest
+            else
+              echo "❌ Erreur: /root/.env-api n'existe pas. Créez-le avec vos variables d'environnement."
+              exit 1
+            fi
           EOF
