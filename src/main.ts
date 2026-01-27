@@ -45,7 +45,8 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173',
-      'https://mini-blog-seven-omega.vercel.app'
+      'https://mini-blog-seven-omega.vercel.app',
+      "https://mini-blog.redopay.online"
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
