@@ -1,0 +1,100 @@
+name: CI/CD API
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Tests
+        run: npm test --if-present
+
+      # --- Snyk (dépendances) ---
+      - name: Install Snyk
+        run: npm install -g snyk
+
+      - name: Snyk test (dependencies)
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test --severity-threshold=medium || echo "Snyk a trouvé des vulnérabilités, mais le pipeline continue"
+
+      # --- Build image Docker ---
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/mini-blog-api
+          docker build -t $IMAGE_NAME:latest .
+
+      # --- Trivy (scan image) ---
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ secrets.DOCKERHUB_USERNAME }}/mini-blog-api:latest
+          format: 'table'
+          exit-code: '1'
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+
+      # --- Push image si tout est OK ---
+      - name: Push Docker image
+        run: |
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/mini-blog-api
+          docker push $IMAGE_NAME:latest
+
+  deploy:
+    needs: build-test-scan
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy on VPS
+        run: |
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/mini-blog-api
+          HOST=${{ secrets.VPS_HOST }}
+          USER=${{ secrets.VPS_USER }}
+
+          ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
+            docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_PASSWORD }}"
+            docker pull $IMAGE_NAME:latest
+            docker stop mini-blog-api || true
+            docker rm mini-blog-api || true
+            docker run -d \
+              --name mini-blog-api \
+              -p 3000:4000 \
+              --env-file /root/.env-api || true \
+              $IMAGE_NAME:latest
+          EOF

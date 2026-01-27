@@ -137,6 +137,8 @@ npx prisma migrate dev
 npm run seed
 ```
 
+⚠️ **Important pour la production** : Voir le [Guide des Migrations](./MIGRATIONS-GUIDE.md) pour déployer les migrations en production sur Render.
+
 ---
 
 ## 🚀 Lancement
@@ -582,9 +584,11 @@ Allez sur [render.com](https://render.com) et créez un compte.
 3. Configuration :
    - **Name** : mini-blog-api
    - **Environment** : Node
-   - **Build Command** : `npm install && npx prisma generate && npm run build`
+   - **Build Command** : `npm install && npx prisma generate && npx prisma migrate deploy && npm run build`
    - **Start Command** : `npm run start:prod`
    - **Plan** : Free (ou Starter)
+
+⚠️ **Important** : La commande `npx prisma migrate deploy` est **cruciale** ! Elle applique les migrations à chaque déploiement.
 
 #### 3. Configurer les variables d'environnement
 
@@ -656,9 +660,23 @@ pm2 save
 
 ⚠️ **Important** : Toujours exécuter les migrations avant de déployer le nouveau code.
 
-```bash
-npx prisma migrate deploy
-```
+#### Option 1 : Automatique (Recommandée)
+
+Si votre Build Command inclut `npx prisma migrate deploy`, les migrations sont appliquées automatiquement à chaque déploiement. ✅
+
+#### Option 2 : Manuelle via Shell Render
+
+1. Render Dashboard > Votre service > **Shell**
+2. Exécuter :
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+#### Option 3 : SQL direct dans Supabase
+
+Si vous ne pouvez pas accéder au Shell, exécutez le SQL directement dans Supabase SQL Editor.
+
+📖 **Documentation complète** : Voir le [Guide des Migrations](./MIGRATIONS-GUIDE.md) pour plus de détails et troubleshooting.
 
 ---
 
